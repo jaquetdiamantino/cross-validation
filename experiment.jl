@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.19
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
@@ -16,19 +16,22 @@ end
 
 # ╔═╡ 9724f990-4eea-11ed-0e44-7120e2ce833d
 begin
+	# main packages
 	using GeoStats
-	using GeoStatsImages
+	using DataFrames
+	using Statistics
+	using GslibIO
+	using Random
+	using Printf
+
+	# UI packages
+	using ProgressLogging
+	using PlutoUI
+
+	# plotting packages
 	using Plots; gr(format="png")
 	using GeoStatsPlots
-	using PlutoUI
-	using Statistics
-	using DataFrames
-	using ProgressLogging
 	using StatsPlots
-	using GslibIO
-	using Printf
-	using CSV
-	using Query
 end
 
 # ╔═╡ 3f6ca50e-5dde-4383-a759-3dba87094f75
@@ -36,15 +39,53 @@ md"""
 # How difficult is variogram selection with cross-validation?
 """
 
-# ╔═╡ 43b147b3-90e3-441f-b2c5-517ca01615c0
+# ╔═╡ f9de8259-4603-4c00-878a-170279f9e602
 md"""
-## Design of experiments
+## Ground truth
 """
 
 # ╔═╡ 25c368c4-bb9d-447f-a98a-cc7c4e88fa34
 md"""
-	Deposit: $(@bind dep PlutoUI.Select(["Deposit 1", "Deposit 2"], default="Deposit 1"))
-	"""
+Deposit: $(@bind dep PlutoUI.Select(["deposit1", "deposit2"]))
+"""
+
+# ╔═╡ 7012ced3-f1d7-46a9-959f-430a92c7e7e0
+# real (unknown) variogram
+if dep == "deposit1"
+	γtrue   = SphericalVariogram(range=40.)
+elseif dep == "deposit2"
+	γtrue   = SphericalVariogram(range=20.)
+end
+
+# ╔═╡ b12bd7dd-3d17-4eb0-b639-08faa62751ac
+# data where to store realizations
+datadir = joinpath("data", dep)
+
+# ╔═╡ 13d43e2e-6c7b-4ca0-ab9f-4c99f306b4ed
+# simulation problem for synthetic deposit
+problem = SimulationProblem(CartesianGrid(1000,1000), :Z => Float64, 100)
+
+# ╔═╡ 850b5eaf-2100-4553-8eac-17931d6c9d8d
+# FFT-based Gaussian simulation
+solver = FFTGS(:Z => (variogram=γtrue, mean=10.))
+
+# ╔═╡ 4d8cc808-426e-4726-96e1-ff719b60b1ca
+# generate synthetic realizations of deposit
+let
+	Random.seed!(2022)
+
+	ensemble = solve(problem, solver)
+
+	for (i, real) in enumerate(ensemble)
+		fname = @sprintf "real%03i.gslib" i
+		GslibIO.save(joinpath(datadir, fname), real)
+	end
+end
+
+# ╔═╡ 43b147b3-90e3-441f-b2c5-517ca01615c0
+md"""
+## Design of experiments
+"""
 
 # ╔═╡ bb422164-7fa5-4ac2-bf03-24fd37414a59
 md"""
@@ -68,17 +109,8 @@ models = [GaussianVariogram, ExponentialVariogram, SphericalVariogram]
 # parameter ranges
 ranges = [10., 20., 30., 40., 50.]
 
-# ╔═╡ 7012ced3-f1d7-46a9-959f-430a92c7e7e0
-# name of the deposits file
-if dep == "Deposit 1"
-	datadir = joinpath("data","reals1")
-elseif dep == "Deposit 2"
-	datadir = joinpath("data","reals2")
-end;
-
 # ╔═╡ 161a2d30-886f-4443-8db5-391d70a7cf0e
 # plot of candidate variograms used in the experiment
-
 let
 	ps = []
 	for model in models
@@ -104,7 +136,7 @@ begin
 	for s in spacings
 		
 		# load the data of the generated realizations
-		gdata = GslibIO.load("data/reals1/real001.gslib")
+		gdata = GslibIO.load(joinpath(datadir,"real001.gslib"))
 
 		# georeferencing the realization
 		deposit = georef(values(gdata), centroid.(domain(gdata)))
@@ -150,7 +182,6 @@ if run
 	
 	@progress for real in 1:100
 
-		# prints all 100 accomplishments
 		fname = @sprintf "real%03i.gslib" real
 
 		gdata = GslibIO.load(joinpath(datadir, fname))
@@ -212,7 +243,6 @@ end;
 
 # ╔═╡ 004c75c6-51bc-41e3-8e36-76cbd433bead
 #function to generate the boxplots of the error values of each candidate variogram
-
 function errorplot(group)
 	df = copy(group)
 	df.group = Symbol.(df.model, df.range)
@@ -254,9 +284,7 @@ end
 
 # ╔═╡ 52de0102-9f54-43ce-8032-6db99730df61
 # function to generate the rankings of the mean and median
-
-function ranking(group)
-	
+function ranking(group)	
 	df = group
 	df_group = DataFrames.groupby(df, [:spacing, :model, :range])
 	error = DataFrames.combine(df_group, :error => reduction => :error)
@@ -276,31 +304,26 @@ end
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 GeoStats = "dcc97b0b-8ce5-5539-9008-bb190f959ef6"
-GeoStatsImages = "7cd16168-b42c-5e7d-a585-4f59d326662d"
 GeoStatsPlots = "cf22561b-6452-4701-9483-6c69015d00e1"
 GslibIO = "4610876b-9b01-57c8-9ad9-06315f1a66a5"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 ProgressLogging = "33c8b6b6-d38a-422a-b730-caa89a2f386c"
-Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
-CSV = "~0.10.9"
 DataFrames = "~1.5.0"
 GeoStats = "~0.37.1"
-GeoStatsImages = "~1.0.1"
 GeoStatsPlots = "~0.1.6"
 GslibIO = "~1.1.3"
 Plots = "~1.38.8"
 PlutoUI = "~0.7.50"
 ProgressLogging = "~0.1.4"
-Query = "~1.0.0"
 StatsPlots = "~0.15.4"
 """
 
@@ -310,7 +333,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "a1fe9058429eadc415e92d05ee94fc7e190ccc30"
+project_hash = "fd1889fecb3b02f8c1fb12a97830f66700a8832f"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -412,12 +435,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "19a35467a82e236ff51bc17a3a44b69ef35185a2"
 uuid = "6e34b625-4abd-537c-b88f-471c36dfa7a0"
 version = "1.0.8+0"
-
-[[deps.CSV]]
-deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "SnoopPrecompile", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
-git-tree-sha1 = "c700cce799b51c9045473de751e9319bdd1c6e94"
-uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.10.9"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -685,12 +702,6 @@ git-tree-sha1 = "c6033cc3892d0ef5bb9cd29b7f2f0331ea5184ea"
 uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
 version = "3.3.10+0"
 
-[[deps.FilePathsBase]]
-deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
-git-tree-sha1 = "e27c4ebe80e8699540f2d6c805cc12203b614f12"
-uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
-version = "0.9.20"
-
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
@@ -781,12 +792,6 @@ deps = ["Combinatorics", "DensityRatioEstimation", "Distances", "Distributed", "
 git-tree-sha1 = "2cbfcd412697f1e156a247425787293ca79d3b09"
 uuid = "323cb8eb-fbf6-51c0-afd0-f8fba70507b2"
 version = "0.30.2"
-
-[[deps.GeoStatsImages]]
-deps = ["GslibIO"]
-git-tree-sha1 = "408f27e8c4b7d697d6a1a91a7278e6e5e959f64e"
-uuid = "7cd16168-b42c-5e7d-a585-4f59d326662d"
-version = "1.0.1"
 
 [[deps.GeoStatsPlots]]
 deps = ["Distances", "GeoStatsBase", "LinearAlgebra", "MeshPlots", "Meshes", "RecipesBase", "Variography"]
@@ -928,12 +933,6 @@ version = "0.2.2"
 git-tree-sha1 = "fa6287a4469f5e048d763df38279ee729fbd44e5"
 uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 version = "1.4.0"
-
-[[deps.IterableTables]]
-deps = ["DataValues", "IteratorInterfaceExtensions", "Requires", "TableTraits", "TableTraitsUtils"]
-git-tree-sha1 = "70300b876b2cebde43ebc0df42bc8c94a144e1b4"
-uuid = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
-version = "1.0.0"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -1394,18 +1393,6 @@ git-tree-sha1 = "6ec7ac8412e83d57e313393220879ede1740f9ee"
 uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
 version = "2.8.2"
 
-[[deps.Query]]
-deps = ["DataValues", "IterableTables", "MacroTools", "QueryOperators", "Statistics"]
-git-tree-sha1 = "a66aa7ca6f5c29f0e303ccef5c8bd55067df9bbe"
-uuid = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
-version = "1.0.0"
-
-[[deps.QueryOperators]]
-deps = ["DataStructures", "DataValues", "IteratorInterfaceExtensions", "TableShowUtils"]
-git-tree-sha1 = "911c64c204e7ecabfd1872eb93c49b4e7c701f02"
-uuid = "2aef5ad7-51ca-5a8f-8e88-e75cf067b44b"
-version = "0.9.3"
-
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -1637,23 +1624,11 @@ git-tree-sha1 = "e383c87cf2a1dc41fa30c093b2a19877c83e1bc1"
 uuid = "ab02a1b2-a7df-11e8-156e-fb1833f50b87"
 version = "1.2.0"
 
-[[deps.TableShowUtils]]
-deps = ["DataValues", "Dates", "JSON", "Markdown", "Test"]
-git-tree-sha1 = "14c54e1e96431fb87f0d2f5983f090f1b9d06457"
-uuid = "5e66a065-1f0a-5976-b372-e0b8c017ca10"
-version = "0.2.5"
-
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
 git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
 uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
 version = "1.0.1"
-
-[[deps.TableTraitsUtils]]
-deps = ["DataValues", "IteratorInterfaceExtensions", "Missings", "TableTraits"]
-git-tree-sha1 = "78fecfe140d7abb480b53a44f3f85b6aa373c293"
-uuid = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
-version = "1.0.2"
 
 [[deps.TableTransforms]]
 deps = ["AbstractTrees", "CategoricalArrays", "Distributions", "LinearAlgebra", "NelderMead", "PrettyTables", "Random", "ScientificTypes", "Statistics", "StatsBase", "Tables", "Transducers", "TransformsBase"]
@@ -1763,12 +1738,6 @@ git-tree-sha1 = "4528479aa01ee1b3b4cd0e6faef0e04cf16466da"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.25.0+0"
 
-[[deps.WeakRefStrings]]
-deps = ["DataAPI", "InlineStrings", "Parsers"]
-git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
-uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
-version = "1.4.2"
-
 [[deps.Widgets]]
 deps = ["Colors", "Dates", "Observables", "OrderedCollections"]
 git-tree-sha1 = "fcdae142c1cfc7d89de2d11e08721d0f2f86c98a"
@@ -1780,11 +1749,6 @@ deps = ["LinearAlgebra", "SparseArrays"]
 git-tree-sha1 = "de67fa59e33ad156a590055375a30b23c40299d3"
 uuid = "efce3f68-66dc-5838-9240-27a6d6f5f9b6"
 version = "0.5.5"
-
-[[deps.WorkerUtilities]]
-git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
-uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
-version = "1.6.1"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "Zlib_jll"]
@@ -2012,16 +1976,21 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╟─9724f990-4eea-11ed-0e44-7120e2ce833d
+# ╠═9724f990-4eea-11ed-0e44-7120e2ce833d
 # ╟─3f6ca50e-5dde-4383-a759-3dba87094f75
-# ╟─43b147b3-90e3-441f-b2c5-517ca01615c0
+# ╟─f9de8259-4603-4c00-878a-170279f9e602
 # ╟─25c368c4-bb9d-447f-a98a-cc7c4e88fa34
+# ╠═7012ced3-f1d7-46a9-959f-430a92c7e7e0
+# ╠═b12bd7dd-3d17-4eb0-b639-08faa62751ac
+# ╠═13d43e2e-6c7b-4ca0-ab9f-4c99f306b4ed
+# ╠═850b5eaf-2100-4553-8eac-17931d6c9d8d
+# ╠═4d8cc808-426e-4726-96e1-ff719b60b1ca
+# ╟─43b147b3-90e3-441f-b2c5-517ca01615c0
 # ╟─bb422164-7fa5-4ac2-bf03-24fd37414a59
 # ╟─2f8d7d0e-2b2b-4429-ae36-c8cdf0c9455f
 # ╠═6095f071-8e10-4a82-9e29-9dda555e5831
 # ╠═43cd4f0a-323e-4745-a457-3163953ba283
 # ╠═289db12f-6fce-4ba6-bff8-644385fe3aa9
-# ╠═7012ced3-f1d7-46a9-959f-430a92c7e7e0
 # ╠═161a2d30-886f-4443-8db5-391d70a7cf0e
 # ╠═2aced2cc-6008-4117-b593-1ef104e8b00b
 # ╟─ac80b474-6e98-406f-a6fe-6b6c45ac6f68
