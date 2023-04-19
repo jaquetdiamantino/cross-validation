@@ -24,3 +24,11 @@ julia> Pluto.run()
 
 - `experiment.jl`: cross-validation experiment
 - `survey.jl`: post-processing of survey results
+
+## Results
+
+### Deposit 1
+
+#### Regular Samples
+
+![dep1-regular](results/dep1-regular.png)
