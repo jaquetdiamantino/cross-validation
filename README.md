@@ -10,23 +10,17 @@ This repository contains the experiments of the paper:
 
 2. Open Julia REPL and install [Pluto](https://github.com/fonsp/Pluto.jl):
 ```julia
-julia> using Pkg
+julia> import Pkg
 julia> Pkg.add("Pluto")
 ```
 3. Clone or download this repository.
 
 4. Launch Pluto:
 ```julia
-julia> using Pluto
+julia> import Pluto
 julia> Pluto.run()
 ```
-5. From the root folder of the project:
+5. Select the notebook of interest:
 
-```bash
-# Experiment
-$ julia --project experiment.jl
-
-# Survey
-$ julia --project survey.jl
-```
-
+- `experiment.jl`: cross-validation experiment
+- `survey.jl`: post-processing of survey results
