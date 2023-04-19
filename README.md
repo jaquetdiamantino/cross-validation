@@ -31,4 +31,4 @@ julia> Pluto.run()
 
 #### Regular Samples
 
-![dep1-regular](results/dep1-regular.png)
+![dep1-regular](results/dep1-regular.png)  ![dep1-clusered](results/dep1-clusered.png)
