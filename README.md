@@ -36,3 +36,13 @@ julia> Pluto.run()
 #### Error estimates obtained through *k-fold* and *leave-one-out* cross-validation applying the three spacings and candidate variograms
 
 ![dep1-boxplots](results/dep1-boxplots.png) 
+
+### Deposit 2
+
+#### Regular Samples and Clustered Samples
+
+![deposit2](results/deposit2.png) 
+
+#### Error estimates obtained through *k-fold* and *leave-one-out* cross-validation applying the three spacings and candidate variograms
+
+![dep2-boxplots](results/dep2-boxplots.png) 
