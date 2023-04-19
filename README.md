@@ -29,6 +29,6 @@ julia> Pluto.run()
 
 ### Deposit 1
 
-#### Regular Samples
+#### Regular Samples and Clustered Samples
 
-![dep1-regular](results/dep1-regular.png)  ![dep1-clustered](results/dep1-clustered.png)
+![deposit1](results/deposit1.png)  
