@@ -31,28 +31,28 @@ julia> Pluto.run()
 
 #### Regular Samples and Clustered Samples
 
-![deposit1](results/deposit1.png) 
+![deposit1](images/deposit1.png) 
 
 #### Error estimates obtained through *k-fold* and *leave-one-out* cross-validation applying the three spacings and candidate variograms
 
-![dep1-boxplots](results/dep1-boxplots.png) 
+![dep1-boxplots](images/dep1-boxplots.png) 
 
 ### Deposit 2
 
 #### Regular Samples and Clustered Samples
 
-![deposit2](results/deposit2.png) 
+![deposit2](images/deposit2.png) 
 
 #### Error estimates obtained through *k-fold* and *leave-one-out* cross-validation applying the three spacings and candidate variograms
 
-![dep2-boxplots](results/dep2-boxplots.png) 
+![dep2-boxplots](images/dep2-boxplots.png) 
 
 ### Survey results
 
 #### Percentage of correct answers by professional profile
 
-![percentage](results/percentage.png) 
+![percentage](images/percentage.png) 
 
 #### Frequency of answers
 
-![frequenc](results/frequenc.png) 
+![frequenc](images/frequenc.png) 
