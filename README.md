@@ -55,4 +55,4 @@ julia> Pluto.run()
 
 #### Frequency of answers
 
-![frequency](results/frequency.png) 
+![frequenc](results/frequenc.png) 
