@@ -46,3 +46,13 @@ julia> Pluto.run()
 #### Error estimates obtained through *k-fold* and *leave-one-out* cross-validation applying the three spacings and candidate variograms
 
 ![dep2-boxplots](results/dep2-boxplots.png) 
+
+### Survey results
+
+#### Percentage of correct answers by professional profile
+
+![percentage](results/percentage.png) 
+
+#### Frequency of answers
+
+![frequency](results/frequency.png) 
