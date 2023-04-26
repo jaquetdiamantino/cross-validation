@@ -254,9 +254,9 @@ function errorplot(group)
 				   color = [:blue :orange :red], ylims = (0.45, 1.0),
    				   linewidth = 2, markersize = 5, fillalpha = 0.55,
 				   legend = :best, sizes = (800, 900),
-				   label = false, xlabel = "POSSÍVEL RESPOSTA", 
-				   ylabel = "ERRO ESTIMADO", title = "ESPAÇAMENTO $s",
-		           xticks = (
+				   label = false, xlabel = "POSSIBLE ANSWER", 
+				   ylabel = "ESTIMATED ERROR", title = "SPACING $s",
+		                   xticks = (
 				   		[1, 2, 3, 4, 5,
 						 6, 7, 8, 9, 10,
 						 11, 12, 13, 14, 15],
