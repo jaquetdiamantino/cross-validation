@@ -1,16 +1,15 @@
 ### A Pluto.jl notebook ###
-# v0.19.19
+# v0.19.22
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 5b954d00-cfa8-11ed-3137-118509e7ee5b
 begin
-	using Plots; gr(format="png")
-	using DataFrames
-	using StatsPlots
 	using CSV
-	using Query
+	using DataFrames
+	using Plots; gr(format="png")
+	using StatsPlots
 end
 
 # ╔═╡ d4ed70f8-3838-4a65-9f73-b0c8d97a092e
@@ -33,9 +32,6 @@ begin
 	dropmissing!(responses)
 
 end
-
-# ╔═╡ 8d301343-b456-4675-a3eb-240238f781e1
-
 
 # ╔═╡ c0626139-36f0-4601-a26c-2abc6d6674ba
 function percentage(responses, dep)
@@ -70,9 +66,6 @@ function percentage(responses, dep)
 	result = DataFrame(percentages)
 	
 end
-
-# ╔═╡ 0168e004-59e8-482a-843a-0e06bc65958c
-
 
 # ╔═╡ 9ba2e0c5-002f-4ca6-89dd-ea3691e8093a
 begin
@@ -116,20 +109,11 @@ function percentageplot(table, dp)
 end
 			
 
-# ╔═╡ 0322c777-1eb8-4bfb-8448-119a6b373670
-
-
 # ╔═╡ b65b0195-2796-42b1-8a8e-dbc9d68856b0
 percentageplot₁ = percentageplot(tablep₁, 1)
 
-# ╔═╡ 185850d2-6db1-4cbd-ab49-f470e9f42a8b
-
-
 # ╔═╡ a524f184-b5c3-4545-8144-9ba3cd007b7f
 percentageplot₂ = percentageplot(tablep₂, 2)
-
-# ╔═╡ 06de2df8-4ca3-4df7-98d7-1f3f1bd46839
-
 
 # ╔═╡ f6f5d5bc-dd78-4f12-8336-a0c3825a9e88
 begin
@@ -155,9 +139,6 @@ begin
 	
 end
 
-# ╔═╡ 3df46ee4-9bab-4e60-acf2-5d1368daf83a
-
-
 # ╔═╡ b7b23960-cc2a-4a6f-8f58-5fb62a88049c
 function deposit(deposits, dp)
 
@@ -175,14 +156,8 @@ function deposit(deposits, dp)
 			)
 end
 
-# ╔═╡ dd655a26-fbba-4f5f-82fd-fd3d93106bec
-
-
 # ╔═╡ adc751fb-02b0-402c-8675-4480fdf49cc7
 deposit(dep₁, 1)
-
-# ╔═╡ a4d7645b-dd88-4e2a-b996-2a8b6599a43d
-
 
 # ╔═╡ bf81ee00-eba2-4d5d-addc-06a313d34d58
 deposit(dep₂, 2)
@@ -193,14 +168,12 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
 CSV = "~0.10.9"
 DataFrames = "~1.5.0"
 Plots = "~1.38.8"
-Query = "~1.0.0"
 StatsPlots = "~0.15.4"
 """
 
@@ -210,7 +183,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "faf5fb3f60767129a4a766399ed619335e4ca52f"
+project_hash = "916fd5f593e31fbd1a9356cc03de9d73b3fc754e"
 
 [[deps.AbstractFFTs]]
 deps = ["ChainRulesCore", "LinearAlgebra"]
@@ -606,12 +579,6 @@ git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.2"
 
-[[deps.IterableTables]]
-deps = ["DataValues", "IteratorInterfaceExtensions", "Requires", "TableTraits", "TableTraitsUtils"]
-git-tree-sha1 = "70300b876b2cebde43ebc0df42bc8c94a144e1b4"
-uuid = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
-version = "1.0.0"
-
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
@@ -977,18 +944,6 @@ git-tree-sha1 = "6ec7ac8412e83d57e313393220879ede1740f9ee"
 uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
 version = "2.8.2"
 
-[[deps.Query]]
-deps = ["DataValues", "IterableTables", "MacroTools", "QueryOperators", "Statistics"]
-git-tree-sha1 = "a66aa7ca6f5c29f0e303ccef5c8bd55067df9bbe"
-uuid = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
-version = "1.0.0"
-
-[[deps.QueryOperators]]
-deps = ["DataStructures", "DataValues", "IteratorInterfaceExtensions", "TableShowUtils"]
-git-tree-sha1 = "911c64c204e7ecabfd1872eb93c49b4e7c701f02"
-uuid = "2aef5ad7-51ca-5a8f-8e88-e75cf067b44b"
-version = "0.9.3"
-
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -1162,23 +1117,11 @@ git-tree-sha1 = "e383c87cf2a1dc41fa30c093b2a19877c83e1bc1"
 uuid = "ab02a1b2-a7df-11e8-156e-fb1833f50b87"
 version = "1.2.0"
 
-[[deps.TableShowUtils]]
-deps = ["DataValues", "Dates", "JSON", "Markdown", "Test"]
-git-tree-sha1 = "14c54e1e96431fb87f0d2f5983f090f1b9d06457"
-uuid = "5e66a065-1f0a-5976-b372-e0b8c017ca10"
-version = "0.2.5"
-
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
 git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
 uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
 version = "1.0.1"
-
-[[deps.TableTraitsUtils]]
-deps = ["DataValues", "IteratorInterfaceExtensions", "Missings", "TableTraits"]
-git-tree-sha1 = "78fecfe140d7abb480b53a44f3f85b6aa373c293"
-uuid = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
-version = "1.0.2"
 
 [[deps.Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "OrderedCollections", "TableTraits", "Test"]
@@ -1488,23 +1431,15 @@ version = "1.4.1+0"
 # ╟─5b954d00-cfa8-11ed-3137-118509e7ee5b
 # ╟─d4ed70f8-3838-4a65-9f73-b0c8d97a092e
 # ╟─97d8c91a-3beb-44df-a2b5-9b9c7d6579c0
-# ╟─8d301343-b456-4675-a3eb-240238f781e1
 # ╟─c0626139-36f0-4601-a26c-2abc6d6674ba
-# ╟─0168e004-59e8-482a-843a-0e06bc65958c
 # ╟─22abf873-846d-4896-b826-aaf848e3789f
 # ╟─9ba2e0c5-002f-4ca6-89dd-ea3691e8093a
 # ╟─c9604fa6-eff7-426b-bac6-29f6974bdd85
-# ╟─0322c777-1eb8-4bfb-8448-119a6b373670
 # ╟─b65b0195-2796-42b1-8a8e-dbc9d68856b0
-# ╟─185850d2-6db1-4cbd-ab49-f470e9f42a8b
 # ╟─a524f184-b5c3-4545-8144-9ba3cd007b7f
-# ╟─06de2df8-4ca3-4df7-98d7-1f3f1bd46839
 # ╟─f6f5d5bc-dd78-4f12-8336-a0c3825a9e88
-# ╟─3df46ee4-9bab-4e60-acf2-5d1368daf83a
-# ╠═b7b23960-cc2a-4a6f-8f58-5fb62a88049c
-# ╟─dd655a26-fbba-4f5f-82fd-fd3d93106bec
+# ╟─b7b23960-cc2a-4a6f-8f58-5fb62a88049c
 # ╟─adc751fb-02b0-402c-8675-4480fdf49cc7
-# ╟─a4d7645b-dd88-4e2a-b996-2a8b6599a43d
 # ╟─bf81ee00-eba2-4d5d-addc-06a313d34d58
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
